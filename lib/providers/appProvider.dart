@@ -42,7 +42,6 @@ class AppProvider with ChangeNotifier {
       final suggestedState = autoList
           .where((element) => element.name.toLowerCase().contains(state))
           .toList();
-
       return suggestedState;
     }
   }
@@ -86,6 +85,7 @@ class AppProvider with ChangeNotifier {
       return false;
     } catch (e) {
       print(e.toString());
+      return false;
     }
   }
 }

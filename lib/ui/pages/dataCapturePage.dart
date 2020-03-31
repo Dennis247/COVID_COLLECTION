@@ -70,7 +70,8 @@ class _DataCaptureState extends State<DataCapture> {
   }
 
   Future<void> _submitData() async {
-    if (!_fromKey.currentState.validate()) {
+    bool isValid = _fromKey.currentState.validate();
+    if (!isValid) {
       return;
     }
     _fromKey.currentState.save();
@@ -90,13 +91,13 @@ class _DataCaptureState extends State<DataCapture> {
           street: _streetController.text);
       final response = await Provider.of<AppProvider>(context, listen: false)
           .submitPatinetData(patientData);
-      Navigator.of(context).pushReplacementNamed("/");
 
       if (!response) {
-        _showFialureDialogue("Data SUbmission Failed", context);
+        await _showFialureDialogue("Data Submission Failed", context);
       }
+      Navigator.of(context).pushReplacementNamed("/");
     } catch (error) {
-      _showFialureDialogue(error.toString(), context);
+      await _showFialureDialogue(error.toString(), context);
     }
     setState(() {
       _isLoading = false;
@@ -160,27 +161,118 @@ class _DataCaptureState extends State<DataCapture> {
               )
             : Padding(
                 padding: const EdgeInsets.all(15.0),
-                child: Form(
-                  key: _fromKey,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Form(
-                      child: ListView(
-                        children: <Widget>[
-                          TextFormField(
-                            controller: _firstNameController,
-                            focusNode: _firstnameFocusNode,
-                            onSaved: (_) {
-                              FocusScope.of(context)
-                                  .requestFocus(_lastnameFocusNode);
-                            },
-                            validator: (value) {
-                              if (value.isNotEmpty) {
-                                return "First name cannot be empty";
-                              }
-                              return null;
-                            },
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Form(
+                    key: _fromKey,
+                    child: ListView(
+                      children: <Widget>[
+                        TextFormField(
+                          controller: _firstNameController,
+                          focusNode: _firstnameFocusNode,
+                          onSaved: (_) {
+                            FocusScope.of(context)
+                                .requestFocus(_lastnameFocusNode);
+                          },
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return "First name cannot be empty";
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.grey,
+                                    size: 15,
+                                  ),
+                                  onPressed: () {
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((_) =>
+                                            _firstNameController.clear());
+                                  }),
+                              labelText: "First Name"),
+                        ),
+                        TextFormField(
+                          controller: _lastNameController,
+                          focusNode: _lastnameFocusNode,
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return "Last name cannot be empty";
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.grey,
+                                    size: 15,
+                                  ),
+                                  onPressed: () {
+                                    _lastNameController.clear();
+                                  }),
+                              labelText: "Last Name"),
+                        ),
+                        TextFormField(
+                          controller: _cityController,
+                          focusNode: _cityFocusNode,
+                          onSaved: (_) {
+                            FocusScope.of(context)
+                                .requestFocus(_streetFocusNode);
+                          },
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return "City cannot be empty";
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.grey,
+                                    size: 15,
+                                  ),
+                                  onPressed: () {}),
+                              labelText: "City"),
+                        ),
+                        TextFormField(
+                          controller: _streetController,
+                          focusNode: _streetFocusNode,
+                          onSaved: (_) {
+                            FocusScope.of(context)
+                                .requestFocus(_stateFocusNode);
+                          },
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return "Street cannot be empty";
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.grey,
+                                    size: 15,
+                                  ),
+                                  onPressed: () {
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback(
+                                            (_) => _streetController.clear());
+                                  }),
+                              labelText: "Street"),
+                        ),
+                        TypeAheadFormField(
+                          direction: AxisDirection.up,
+                          debounceDuration: Duration(milliseconds: 500),
+                          textFieldConfiguration: TextFieldConfiguration(
+                            controller: _stateController,
+                            focusNode: _stateFocusNode,
+                            style: TextStyle(fontSize: 12),
                             decoration: InputDecoration(
                                 suffixIcon: IconButton(
                                     icon: Icon(
@@ -189,154 +281,60 @@ class _DataCaptureState extends State<DataCapture> {
                                       size: 15,
                                     ),
                                     onPressed: () {
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback((_) =>
-                                              _firstNameController.clear());
+                                      _stateController.clear();
                                     }),
-                                labelText: "First Name"),
+                                labelText: "State"),
                           ),
-                          TextFormField(
-                            controller: _lastNameController,
-                            focusNode: _lastnameFocusNode,
-                            validator: (value) {
-                              if (value.isNotEmpty) {
-                                return "Last name cannot be empty";
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                    icon: Icon(
-                                      Icons.close,
-                                      color: Colors.grey,
-                                      size: 15,
-                                    ),
-                                    onPressed: () {
-                                      _lastNameController.clear();
-                                    }),
-                                labelText: "Last Name"),
-                          ),
-                          TextFormField(
-                            controller: _cityController,
-                            focusNode: _cityFocusNode,
-                            onSaved: (_) {
-                              FocusScope.of(context)
-                                  .requestFocus(_streetFocusNode);
-                            },
-                            validator: (value) {
-                              if (value.isNotEmpty) {
-                                return "City cannot be empty";
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                    icon: Icon(
-                                      Icons.close,
-                                      color: Colors.grey,
-                                      size: 15,
-                                    ),
-                                    onPressed: () {}),
-                                labelText: "City"),
-                          ),
-                          TextFormField(
-                            controller: _streetController,
-                            focusNode: _streetFocusNode,
-                            onSaved: (_) {
-                              FocusScope.of(context)
-                                  .requestFocus(_stateFocusNode);
-                            },
-                            validator: (value) {
-                              if (value.isNotEmpty) {
-                                return "Street cannot be empty";
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                    icon: Icon(
-                                      Icons.close,
-                                      color: Colors.grey,
-                                      size: 15,
-                                    ),
-                                    onPressed: () {
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback(
-                                              (_) => _streetController.clear());
-                                    }),
-                                labelText: "Street"),
-                          ),
-                          TypeAheadFormField(
-                            direction: AxisDirection.up,
-                            debounceDuration: Duration(milliseconds: 500),
-                            textFieldConfiguration: TextFieldConfiguration(
-                              controller: _stateController,
-                              focusNode: _stateFocusNode,
-                              style: TextStyle(fontSize: 12),
-                              decoration: InputDecoration(
-                                  suffixIcon: IconButton(
-                                      icon: Icon(
-                                        Icons.close,
-                                        color: Colors.grey,
-                                        size: 15,
-                                      ),
-                                      onPressed: () {
-                                        _stateController.clear();
-                                      }),
-                                  labelText: "State"),
-                            ),
-                            validator: (value) {
-                              if (value.isNotEmpty) {
-                                return "State name cannot be empty";
-                              }
-                              return null;
-                            },
-                            suggestionsCallback: (pattern) {
-                              return Provider.of<AppProvider>(context,
-                                      listen: false)
-                                  .getStateSuggestions(pattern);
-                            },
-                            itemBuilder: (context, NigeriaState suggetion) {
-                              return ListTile(
-                                title: Text(
-                                  suggetion.name,
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                subtitle: Text(suggetion.id.toString()),
-                              );
-                            },
-                            onSuggestionSelected:
-                                (NigeriaState suggetion) async {
-                              _stateController.text = suggetion.name;
-                            },
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text("Gender"),
-                              buildGenderRadioButton(0, _genderList[0]),
-                              buildGenderRadioButton(1, _genderList[1]),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 25,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 25, right: 25),
-                            child: MaterialButton(
-                              color: Constants.primaryColor,
-                              onPressed: _submitData,
-                              child: Text(
-                                "SUBMIT",
-                                style: TextStyle(color: Colors.white),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return "State name cannot be empty";
+                            }
+                            return null;
+                          },
+                          suggestionsCallback: (pattern) {
+                            return Provider.of<AppProvider>(context,
+                                    listen: false)
+                                .getStateSuggestions(pattern);
+                          },
+                          itemBuilder: (context, NigeriaState suggetion) {
+                            return ListTile(
+                              title: Text(
+                                suggetion.name,
+                                style: TextStyle(fontSize: 12),
                               ),
+                              subtitle: Text(suggetion.id.toString()),
+                            );
+                          },
+                          onSuggestionSelected: (NigeriaState suggetion) async {
+                            _stateController.text = suggetion.name;
+                          },
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text("Gender"),
+                            buildGenderRadioButton(0, _genderList[0]),
+                            buildGenderRadioButton(1, _genderList[1]),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 25, right: 25),
+                          child: MaterialButton(
+                            color: Constants.primaryColor,
+                            onPressed: _submitData,
+                            child: Text(
+                              "SUBMIT",
+                              style: TextStyle(color: Colors.white),
                             ),
-                          )
-                        ],
-                      ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 ),
