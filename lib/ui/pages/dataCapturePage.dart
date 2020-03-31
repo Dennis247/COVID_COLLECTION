@@ -1,6 +1,8 @@
 import 'package:covid_collection/helpers/constant.dart';
+import 'package:covid_collection/models/patient.dart';
 import 'package:covid_collection/models/state.dart';
 import 'package:covid_collection/providers/appProvider.dart';
+import 'package:covid_collection/ui/pages/patientsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:location/location.dart';
@@ -38,6 +40,7 @@ class _DataCaptureState extends State<DataCapture> {
 
   @override
   void initState() {
+    _selectedGender = _genderList[0];
     _isLoading = true;
     getRequiredData().whenComplete(() {
       setState(() {
@@ -53,6 +56,7 @@ class _DataCaptureState extends State<DataCapture> {
     _firstnameFocusNode.dispose();
     _lastnameFocusNode.dispose();
     _streetFocusNode.dispose();
+    _stateFocusNode.dispose();
 
     super.dispose();
   }
@@ -65,7 +69,58 @@ class _DataCaptureState extends State<DataCapture> {
     _longitude = currentLocation.longitude.toString();
   }
 
-  Future<void> _submitData() {}
+  Future<void> _submitData() async {
+    if (!_fromKey.currentState.validate()) {
+      return;
+    }
+    _fromKey.currentState.save();
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final patientData = Patient(
+          city: _cityController.text,
+          firstname: _firstNameController.text,
+          gender: _selectedGender,
+          lastname: _lastNameController.text,
+          lat: _latitude,
+          lng: _longitude,
+          state: _stateController.text,
+          street: _streetController.text);
+      final response = await Provider.of<AppProvider>(context, listen: false)
+          .submitPatinetData(patientData);
+      Navigator.of(context).pushReplacementNamed("/");
+
+      if (!response) {
+        _showFialureDialogue("Data SUbmission Failed", context);
+      }
+    } catch (error) {
+      _showFialureDialogue(error.toString(), context);
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  _showFialureDialogue(String message, BuildContext context) async {
+    await showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text("Something went wrong"),
+            content: Text(message),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
+  }
 
   Row buildGenderRadioButton(int btnValue, String title) {
     return Row(
@@ -92,17 +147,12 @@ class _DataCaptureState extends State<DataCapture> {
       child: Scaffold(
         appBar: AppBar(
           title: Text("ADD  DATA"),
+          centerTitle: true,
           automaticallyImplyLeading: false,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
             onPressed: () => Navigator.pop(context),
           ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.save),
-              onPressed: () {},
-            ),
-          ],
         ),
         body: _isLoading
             ? Center(
@@ -121,6 +171,10 @@ class _DataCaptureState extends State<DataCapture> {
                           TextFormField(
                             controller: _firstNameController,
                             focusNode: _firstnameFocusNode,
+                            onSaved: (_) {
+                              FocusScope.of(context)
+                                  .requestFocus(_lastnameFocusNode);
+                            },
                             validator: (value) {
                               if (value.isNotEmpty) {
                                 return "First name cannot be empty";
@@ -135,7 +189,9 @@ class _DataCaptureState extends State<DataCapture> {
                                       size: 15,
                                     ),
                                     onPressed: () {
-                                      _firstNameController.clear();
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) =>
+                                              _firstNameController.clear());
                                     }),
                                 labelText: "First Name"),
                           ),
@@ -163,6 +219,10 @@ class _DataCaptureState extends State<DataCapture> {
                           TextFormField(
                             controller: _cityController,
                             focusNode: _cityFocusNode,
+                            onSaved: (_) {
+                              FocusScope.of(context)
+                                  .requestFocus(_streetFocusNode);
+                            },
                             validator: (value) {
                               if (value.isNotEmpty) {
                                 return "City cannot be empty";
@@ -182,6 +242,10 @@ class _DataCaptureState extends State<DataCapture> {
                           TextFormField(
                             controller: _streetController,
                             focusNode: _streetFocusNode,
+                            onSaved: (_) {
+                              FocusScope.of(context)
+                                  .requestFocus(_stateFocusNode);
+                            },
                             validator: (value) {
                               if (value.isNotEmpty) {
                                 return "Street cannot be empty";
@@ -195,7 +259,11 @@ class _DataCaptureState extends State<DataCapture> {
                                       color: Colors.grey,
                                       size: 15,
                                     ),
-                                    onPressed: () {}),
+                                    onPressed: () {
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback(
+                                              (_) => _streetController.clear());
+                                    }),
                                 labelText: "Street"),
                           ),
                           TypeAheadFormField(
@@ -203,7 +271,7 @@ class _DataCaptureState extends State<DataCapture> {
                             debounceDuration: Duration(milliseconds: 500),
                             textFieldConfiguration: TextFieldConfiguration(
                               controller: _stateController,
-                              autofocus: true,
+                              focusNode: _stateFocusNode,
                               style: TextStyle(fontSize: 12),
                               decoration: InputDecoration(
                                   suffixIcon: IconButton(
@@ -254,8 +322,19 @@ class _DataCaptureState extends State<DataCapture> {
                             ],
                           ),
                           SizedBox(
-                            height: 15,
+                            height: 25,
                           ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 25, right: 25),
+                            child: MaterialButton(
+                              color: Constants.primaryColor,
+                              onPressed: _submitData,
+                              child: Text(
+                                "SUBMIT",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),

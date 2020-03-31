@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
                 TargetPlatform.android: CustomPageTransitionBuilder(),
               })),
           home: HomePage(),
+          debugShowCheckedModeBanner: false,
           routes: {
             PatientsPage.routeName: (context) => PatientsPage(),
             DataCapture.routeName: (context) => DataCapture()

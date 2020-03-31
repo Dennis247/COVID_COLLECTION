@@ -14,7 +14,7 @@ class AppDrawerWidget extends StatelessWidget {
           ),
           ListTile(
             onTap: () {
-              Navigator.of(context).pushNamed("/");
+              Navigator.of(context).pushReplacementNamed("/");
             },
             leading: Icon(
               Icons.home,
@@ -30,7 +30,8 @@ class AppDrawerWidget extends StatelessWidget {
             ),
             title: Text("Patients"),
             onTap: () {
-              Navigator.of(context).pushNamed(PatientsPage.routeName);
+              Navigator.of(context)
+                  .pushReplacementNamed(PatientsPage.routeName);
             },
           )
         ],

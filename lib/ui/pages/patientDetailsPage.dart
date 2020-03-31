@@ -16,17 +16,93 @@ class PatientsDetail extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: ListView(
-          children: <Widget>[
-            ListTile(
-              title: Text("First Name"),
-              subtitle: Text(patient.firstname),
-            ),
-            Divider(),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Container(
+          alignment: Alignment.center,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: ListView(
+            children: <Widget>[
+              ListTile(
+                title: Text(
+                  "First Name",
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+                subtitle: Text(
+                  patient.firstname,
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                title: Text(
+                  "Last Name",
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+                subtitle: Text(
+                  patient.lastname,
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                title: Text(
+                  "Gender",
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+                subtitle: Text(
+                  patient.gender,
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                title: Text(
+                  "City",
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+                subtitle: Text(
+                  patient.city,
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                title: Text(
+                  "Street",
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+                subtitle: Text(
+                  patient.street,
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                title: Text(
+                  "State",
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+                subtitle: Text(
+                  patient.state,
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                title: Text(
+                  "Location",
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+                subtitle: Text(
+                  "Latitude : ${patient.lat}\nLongitude : ${patient.lng}",
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+              ),
+              Divider(),
+            ],
+          ),
         ),
       ),
     );

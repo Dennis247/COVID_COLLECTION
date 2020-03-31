@@ -1,4 +1,6 @@
+import 'package:covid_collection/helpers/constant.dart';
 import 'package:covid_collection/providers/appProvider.dart';
+import 'package:covid_collection/ui/pages/dataCapturePage.dart';
 import 'package:covid_collection/ui/widgets/appDrawerWidget.dart';
 import 'package:covid_collection/ui/widgets/patientItemWidget.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +46,13 @@ class PatientsPage extends StatelessWidget {
             }
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Constants.primaryColor,
+        onPressed: () {
+          Navigator.of(context).pushNamed(DataCapture.routeName);
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

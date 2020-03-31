@@ -66,7 +66,17 @@ class AppProvider with ChangeNotifier {
   Future<bool> submitPatinetData(Patient patinet) async {
     try {
       final responseData = await http.post(Constants.patientSubmissionApi,
-          body: json.encode({patinet.toMap()}));
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'city': patinet.city,
+            'firstname': patinet.firstname,
+            'gender': patinet.gender,
+            'lastname': patinet.lastname,
+            'lat': patinet.lat,
+            'lng': patinet.lng,
+            'state': patinet.state,
+            'street': patinet.street,
+          }));
       if (responseData.statusCode == 201) {
         print("patinet data submitted sucessfully");
         _listedPatients.add(patinet);

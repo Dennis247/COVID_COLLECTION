@@ -21,6 +21,13 @@ class _HomePageState extends State<HomePage> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
+        child: Center(
+          child: Icon(
+            Icons.group_add,
+            color: Constants.primaryColor,
+            size: 200,
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Constants.primaryColor,
