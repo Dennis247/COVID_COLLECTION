@@ -171,7 +171,8 @@ class _DataCaptureState extends State<DataCapture> {
                         TextFormField(
                           controller: _firstNameController,
                           focusNode: _firstnameFocusNode,
-                          onSaved: (_) {
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: (_) {
                             FocusScope.of(context)
                                 .requestFocus(_lastnameFocusNode);
                           },
@@ -198,6 +199,10 @@ class _DataCaptureState extends State<DataCapture> {
                         TextFormField(
                           controller: _lastNameController,
                           focusNode: _lastnameFocusNode,
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context).requestFocus(_cityFocusNode);
+                          },
                           validator: (value) {
                             if (value.isEmpty) {
                               return "Last name cannot be empty";
@@ -219,7 +224,8 @@ class _DataCaptureState extends State<DataCapture> {
                         TextFormField(
                           controller: _cityController,
                           focusNode: _cityFocusNode,
-                          onSaved: (_) {
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: (_) {
                             FocusScope.of(context)
                                 .requestFocus(_streetFocusNode);
                           },
@@ -242,7 +248,8 @@ class _DataCaptureState extends State<DataCapture> {
                         TextFormField(
                           controller: _streetController,
                           focusNode: _streetFocusNode,
-                          onSaved: (_) {
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: (_) {
                             FocusScope.of(context)
                                 .requestFocus(_stateFocusNode);
                           },
@@ -272,7 +279,6 @@ class _DataCaptureState extends State<DataCapture> {
                           textFieldConfiguration: TextFieldConfiguration(
                             controller: _stateController,
                             focusNode: _stateFocusNode,
-                            style: TextStyle(fontSize: 12),
                             decoration: InputDecoration(
                                 suffixIcon: IconButton(
                                     icon: Icon(
@@ -300,9 +306,7 @@ class _DataCaptureState extends State<DataCapture> {
                             return ListTile(
                               title: Text(
                                 suggetion.name,
-                                style: TextStyle(fontSize: 12),
                               ),
-                              subtitle: Text(suggetion.id.toString()),
                             );
                           },
                           onSuggestionSelected: (NigeriaState suggetion) async {
